@@ -28,6 +28,10 @@ BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
+HBITMAP bi;
+HDC whdc;
+HDC hdcMem;
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
                      _In_ LPWSTR    lpCmdLine,
@@ -52,6 +56,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_NOTMOLD));
 
     MSG msg;
+
+    bi = (HBITMAP)LoadImageA(0, "dead.bmp", IMAGE_BITMAP, 10, 10, LR_LOADFROMFILE);
+    whdc = GetDC(NULL);
+    hdcMem = CreateCompatibleDC(whdc);
+    SelectObject(hdcMem, bi);
 
     // Main message loop:
     while (GetMessage(&msg, nullptr, 0, 0))
@@ -157,7 +166,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: Add any drawing code that uses hdc here...
+            
+            BitBlt(whdc, 100, 10, 10, 10, hdcMem, 0, 0, SRCCOPY);
+            BitBlt(whdc, 20, 10, 10, 10, hdcMem, 0, 0, SRCCOPY);
+
             EndPaint(hWnd, &ps);
         }
         break;
