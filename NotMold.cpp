@@ -14,6 +14,7 @@
 
 #include "framework.h"
 #include "NotMold.h"
+#include <thread>
 
 #define MAX_LOADSTRING 100
 
@@ -31,6 +32,21 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 HBITMAP bi;
 HDC whdc;
 HDC hdcMem;
+
+int corruption() {
+    bi = (HBITMAP)LoadImageA(0, "dead.bmp", IMAGE_BITMAP, 10, 10, LR_LOADFROMFILE);
+    whdc = GetDC(NULL);
+    hdcMem = CreateCompatibleDC(whdc);
+    SelectObject(hdcMem, bi);
+
+    for (;;) {
+        // todo not sure where this goes
+        BitBlt(whdc, 100, 10, 10, 10, hdcMem, 0, 0, SRCCOPY);
+        BitBlt(whdc, 20, 10, 10, 10, hdcMem, 0, 0, SRCCOPY);
+    }
+
+    return 0;
+}
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -57,10 +73,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg;
 
-    bi = (HBITMAP)LoadImageA(0, "dead.bmp", IMAGE_BITMAP, 10, 10, LR_LOADFROMFILE);
-    whdc = GetDC(NULL);
-    hdcMem = CreateCompatibleDC(whdc);
-    SelectObject(hdcMem, bi);
+    std::thread t{ corruption };
 
     // Main message loop:
     while (GetMessage(&msg, nullptr, 0, 0))
@@ -71,6 +84,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             DispatchMessage(&msg);
         }
     }
+
+    t.join();
 
     return (int) msg.wParam;
 }
@@ -166,10 +181,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-            
-            BitBlt(whdc, 100, 10, 10, 10, hdcMem, 0, 0, SRCCOPY);
-            BitBlt(whdc, 20, 10, 10, 10, hdcMem, 0, 0, SRCCOPY);
-
             EndPaint(hWnd, &ps);
         }
         break;
