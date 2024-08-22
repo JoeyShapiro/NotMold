@@ -1,6 +1,17 @@
 // NotMold.cpp : Defines the entry point for the application.
 //
 
+// i could use directx or direct3d and draw on boderless/fullscreen/transparent window
+// but i dont know if i can click through it
+// also so much extra work
+// and adding gpu, forget about it
+
+// i could go back to bitblt with menutools
+// but do classic game ideas
+// just one big image, it doesnt feel the same,but its much smarter
+// then i can modify the image with the gpu and render it whole
+// i could also pass it the current image and play with hsls
+
 #include "framework.h"
 #include "NotMold.h"
 
